@@ -1,0 +1,26 @@
+name: ShipStation Status Sync
+
+on:
+  schedule:
+    # Run every 30 minutes
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+    # Allow manual trigger from GitHub UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    name: Sync order statuses from ShipStation
+
+    steps:
+      - name: Call ShipStation sync endpoint
+        run: |
+          curl -X POST \
+            "${{ secrets.SUPABASE_URL }}/functions/v1/shipstation-sync/status-sync" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Content-Type: application/json" \
+            -w "\nStatus: %{http_code}\n"
+        continue-on-error: true
+
+      - name: Log sync completion
+        run: echo "ShipStation sync completed at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
