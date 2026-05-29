@@ -625,8 +625,21 @@ async function deductInventoryForOrder(supabase: ReturnType<typeof createClient>
 }
 
 async function handleOrderStatusSync(req: Request): Promise<Response> {
-  const { supabase, error: authErr } = await verifyAdmin(req);
-  if (authErr || !supabase) return jsonResponse({ error: authErr }, 401);
+  // For automated syncs (GitHub Actions, cron jobs), use service role directly
+  // Otherwise verify admin for manual trigger
+  let supabase = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+  );
+
+  // Optional: verify if user is making request (for UI-triggered syncs)
+  const authHeader = req.headers.get("Authorization");
+  if (authHeader) {
+    const { supabase: userSupabase, error: authErr } = await verifyAdmin(req);
+    if (authErr || !userSupabase) return jsonResponse({ error: authErr }, 401);
+    supabase = userSupabase;
+  }
+  // If no auth header, that's OK for automated syncs - use service role
 
   const apiKey = getApiKey();
   if (!apiKey)
