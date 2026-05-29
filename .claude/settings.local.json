@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(npx tsc *)",
+      "Bash(curl -s http://localhost:5173)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(cat > *)",
+      "Bash(grep -E \"\\\\.\\(tsx|ts|jsx|js\\)$\")",
+      "Bash(curl -s http://localhost:5175/admin/products)",
+      "Bash(supabase functions *)",
+      "mcp__scheduled-tasks__create_scheduled_task",
+      "Bash(npx supabase *)",
+      "Bash(pkill -f \"vite\")",
+      "Bash(curl -s http://localhost:5176)"
+    ]
+  }
+}
